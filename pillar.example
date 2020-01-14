@@ -1,0 +1,33 @@
+filebeat:
+  repo: 7.x
+  version: 7.5.1
+  hold: True
+  restart: True
+  enable: True
+  config:
+    filebeat.inputs:
+    - type: log
+      enabled: false
+      paths:
+        - /var/log/*.log
+    filebeat.config.modules:
+      path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+    setup.ilm.enabled: false
+    output.logstash:
+      hosts:
+        - "127.0.0.1:5044"
+    processors:
+      - add_host_metadata: ~
+      - add_cloud_metadata: ~
+
+  modules:
+    elasticsearch:
+      filename: netflow
+      config:
+        - module: netflow
+          log:
+            enabled: true
+            var:
+              netflow_host: localhost
+              netflow_port: 2055
